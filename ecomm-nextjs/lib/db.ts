@@ -32,6 +32,15 @@ const PRODUCTS = [
         description: "Product 3 description",
         image: "https://img.freepik.com/free-photo/still-life-books-versus-technology_23-2150062920.jpg?semt=ais_hybrid&w=740",
     },
+    {
+        id: "4",
+        name: "Product 4",
+        price: 400,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        description: "Product 4 description",
+        image: "https://img.freepik.com/free-photo/still-life-books-versus-technology_23-2150062920.jpg?semt=ais_hybrid&w=740",
+    },
 ];
 
 class MockDB {
@@ -39,7 +48,10 @@ class MockDB {
 
     constructor() {
         PRODUCTS.forEach((product) => {
-            this.products.set(product.id, product);
+            this.products.set(product.id, {
+                ...product,
+                stock: 10,
+            });
         });
     }
 

@@ -1,6 +1,7 @@
 export interface CartItem {
   id: string;
   productId: string;
+  image: string;
   name: string;
   price: number;
   quantity: number;
@@ -21,6 +22,7 @@ export interface Product {
   description: string;
   price: number;
   image?: string;
+  stock: number;
   createdAt: Date;
   updatedAt: Date;
 }
