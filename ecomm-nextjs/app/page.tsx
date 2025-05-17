@@ -4,7 +4,9 @@ import { Container, Grid, Typography, CircularProgress, Box } from '@mui/materia
 import { ProductCard } from '@/components/product-card';
 import { useCart } from '@/hooks/cart-context';
 import { useQuery } from '@tanstack/react-query';
-import { getProducts } from '@/app/actions/product/get-products';
+import { getProducts } from '@/features/product/actions/get-products';
+import { useCallback } from 'react';
+import { Product } from '@/types/product';
 
 export default function Home() {
   const { addItem, removeItem, items } = useCart();
@@ -13,6 +15,30 @@ export default function Home() {
     queryKey: ['products'],
     queryFn: getProducts,
   });
+
+  const handleAddToCart = useCallback((product: Product) => {
+    addItem({
+      id: product.id,
+      productId: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: 1,
+      image: product.image || '/placeholder.png',
+      maxQuantity: 10,
+    });
+  }, []);
+
+  const handleRemoveFromCart = useCallback((product: Product) => {
+    removeItem({
+      id: product.id,
+      productId: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: 1,
+      image: product.image || '/placeholder.png',
+      maxQuantity: 10,
+    });
+  }, []);
 
   if (loading) {
     return (
@@ -41,24 +67,8 @@ export default function Home() {
             <Grid key={product.id} size={3}>
               <ProductCard
                 product={product}
-                onAddToCart={() => addItem({
-                  id: product.id,
-                  productId: product.id,
-                  name: product.name,
-                  price: product.price,
-                  quantity: 1,
-                  image: product.image || '/placeholder.png',
-                  maxQuantity: 10,
-                })}
-                onRemoveFromCart={() => removeItem({
-                  id: product.id,
-                  productId: product.id,
-                  name: product.name,
-                  price: product.price,
-                  quantity: 1,
-                  image: product.image || '/placeholder.png',
-                  maxQuantity: 10,
-                })}
+                onAddToCart={handleAddToCart}
+                onRemoveFromCart={handleRemoveFromCart}
                 isInCart={items.some((item) => item.id === product.id)}
               />
             </Grid>

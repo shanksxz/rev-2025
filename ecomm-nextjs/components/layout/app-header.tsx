@@ -5,9 +5,7 @@ import { ShoppingCart } from '@mui/icons-material';
 import { useCart } from '@/hooks/cart-context';
 
 export default function AppHeader() {
-
   const { totalItems } = useCart();
-
   return (
     <AppBar position="static" sx={{ backgroundColor: "black", boxShadow: "none" }}>
       <Toolbar sx={{ minHeight: 64, px: { xs: 2, sm: 4 } }}>
@@ -15,7 +13,6 @@ export default function AppHeader() {
           <Link
             href="/"
             underline="none"
-            color="inherit"
             sx={{
               letterSpacing: 1,
               fontSize: { xs: "1.1rem", sm: "1.3rem" },
@@ -28,35 +25,13 @@ export default function AppHeader() {
           </Link>
         </Typography>
         <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-          <Link href="/products/add" underline="none" color="inherit">
-            <Button
-              variant="text"
-              color="inherit"
-              sx={{
-                textTransform: "none",
-                fontWeight: 500,
-                fontSize: "1rem",
-                px: 2,
-                "&:hover": { background: "rgba(255,255,255,0.04)" }
-              }}
-            >
-              Add Product
-            </Button>
+          <Link href="/products" underline="none" color="inherit">
+            <Typography variant="body1" color="inherit">Manage Products</Typography>
           </Link>
           <Link href="/cart" underline="none" color="inherit">
             <Badge
               badgeContent={totalItems}
               color="primary"
-              sx={{
-                "& .MuiBadge-badge": {
-                  right: -4,
-                  top: 4,
-                  fontWeight: 600,
-                  fontSize: "0.75rem",
-                  minWidth: 18,
-                  height: 18,
-                }
-              }}
             >
               <ShoppingCart sx={{ color: "white", fontSize: 28 }} />
             </Badge>

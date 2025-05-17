@@ -3,9 +3,7 @@ import { cache } from "react";
 
 const queryConfig: DefaultOptions = {
     queries: {
-        refetchOnWindowFocus: false,
         refetchOnMount: false,
-        refetchOnReconnect: false,
         retry: false,
         staleTime: 5 * 1000,
     },

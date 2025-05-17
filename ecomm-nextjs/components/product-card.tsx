@@ -1,5 +1,6 @@
 'use client';
 
+import React, { memo } from 'react';
 import {
     Card,
     CardContent,
@@ -20,12 +21,13 @@ interface ProductCardProps {
     isInCart: boolean;
 }
 
-export function ProductCard({
+export const ProductCard = memo(function ProductCard({
     product,
     onAddToCart,
     onRemoveFromCart,
     isInCart,
 }: ProductCardProps) {
+    console.log("rerender product card");
     return (
         <Card
             sx={{
@@ -111,4 +113,4 @@ export function ProductCard({
             </CardActions>
         </Card>
     );
-}
+});
