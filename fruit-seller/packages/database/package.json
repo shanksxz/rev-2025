@@ -1,0 +1,27 @@
+{
+  "name": "@repo/database",
+  "version": "1.0.0",
+  "main": "index.js",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "format-and-lint": "biome check ./src",
+    "format-and-lint:fix": "biome check --write ./src",
+    "with-env": "dotenv -e ../../.env --",
+    "db:migrate": "pnpm with-env tsx ./src/scripts/migration.ts",
+    "db:studio": "pnpm with-env drizzle-kit studio",
+    "db:generate": "pnpm with-env drizzle-kit generate"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.38.4",
+    "postgres": "^3.4.5"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^20",
+    "dotenv-cli": "^8.0.0",
+    "drizzle-kit": "^0.30.2",
+    "tsx": "^4.19.4"
+  }
+}

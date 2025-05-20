@@ -1,0 +1,39 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "format-and-lint": "biome check ./src",
+    "format-and-lint:fix": "biome check --write ./src"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "5.16.14",
+    "@mui/material": "5.16.14",
+    "@mui/styles": "5.16.14",
+    "@mui/system": "5.16.4",
+    "@tanstack/react-query": "^5.76.1",
+    "axios": "^1.9.0",
+    "bcryptjs": "^3.0.2",
+    "cookie": "^1.0.2",
+    "formik": "^2.4.6",
+    "jose": "^6.0.11",
+    "next": "14.2.25",
+    "react": "^18",
+    "react-dom": "^18",
+    "yup": "^1.6.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@repo/database": "workspace:*",
+    "@types/bcryptjs": "^3.0.0",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "typescript": "^5"
+  }
+}
