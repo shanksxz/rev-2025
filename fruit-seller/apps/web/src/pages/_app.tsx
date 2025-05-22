@@ -1,26 +1,25 @@
-import Providers from "@/providers";
-import "@/styles/globals.css";
-import type { AppProps } from "next/app";
-// import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
+import type { ReactElement, ReactNode } from 'react';
+import type { NextPage } from 'next';
+import type { AppProps } from 'next/app';
+import '../styles/globals.css';
+import { QueryClientProvider } from '@tanstack/react-query';
+import Providers from '../providers';
+import { createQueryClient } from '@/lib/react-query';
 
-// const theme = createTheme({
-//   palette: {
-//     primary: {
-//       main: "#556cd6",
-//     },
-//     secondary: {
-//       main: "#19857b",
-//     },
-//   },
-// });
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+	getLayout?: (page: ReactElement) => ReactNode;
+};
 
-export default function App({ Component, pageProps }: AppProps) {
+type AppPropsWithLayout = AppProps & {
+	Component: NextPageWithLayout;
+};
+
+
+export default function MyApp({ Component, pageProps }: AppPropsWithLayout) {
+	const getLayout = Component.getLayout ?? ((page) => page);
 	return (
-		// <ThemeProvider theme={theme}>
-		// <CssBaseline />
-		<Providers>
-			<Component {...pageProps} />
-		</Providers>
-		// </ThemeProvider>
+		<QueryClientProvider client={createQueryClient()}>
+			<Providers>{getLayout(<Component {...pageProps} />)}</Providers>
+		</QueryClientProvider>
 	);
 }

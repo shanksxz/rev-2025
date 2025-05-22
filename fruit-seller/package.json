@@ -10,6 +10,7 @@
     "db:migrate": "turbo db:migrate",
     "db:studio": "turbo db:studio",
     "db:generate": "turbo db:generate",
+    "db:seed": "turbo db:seed",
     "prepare": "husky"
   },
   "devDependencies": {
