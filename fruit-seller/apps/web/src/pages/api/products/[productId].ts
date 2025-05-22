@@ -1,6 +1,39 @@
-import { db, eq, products } from "@repo/database";
+import { db, eq, products, sessions } from "@repo/database";
 import type { NextApiResponse } from "next";
 import type { NextApiRequest } from "next";
+
+export const getSession = async (req: NextApiRequest, res: NextApiResponse) => {
+    try {
+        const sessionToken = req.cookies.session;
+
+        if (!sessionToken) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const session = await db.query.sessions.findFirst({
+            where: eq(sessions.token, sessionToken),
+            with: {
+                user: {
+                    columns: {
+                        role: true,
+                        firstName: true,
+                        lastName: true,
+                        email: true,
+                    },
+                },
+            },
+        });
+
+        if (!session?.user) {
+            return null;
+        }
+
+        return session;
+    } catch (error) {
+        console.error("Session error:", error);
+        return null;
+    }
+};
 
 export const getProduct = async (req: NextApiRequest, res: NextApiResponse) => {
     try {
@@ -18,6 +51,10 @@ export const deleteProduct = async (
     res: NextApiResponse
 ) => {
     try {
+        const session = await getSession(req, res);
+        if (!session || session.user.role !== "admin") {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
         await db
             .delete(products)
             .where(eq(products.id, req.query.productId as string));
@@ -32,6 +69,10 @@ export const updateProduct = async (
     res: NextApiResponse
 ) => {
     try {
+        const session = await getSession(req, res);
+        if (!session || session.user.role !== "admin") {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
         const { id, createdAt, updatedAt, ...rest } = req.body;
         await db
             .update(products)

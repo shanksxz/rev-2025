@@ -14,9 +14,9 @@ import { ProductType } from '@repo/database';
 import Link from 'next/link';
 
 interface ProductCardProps {
-    product: ProductType;
-    onAddToCart: (product: ProductType) => void;
-    onRemoveFromCart: (product: ProductType) => void;
+    product: Omit<ProductType, "categoryId">;
+    onAddToCart: (product: Omit<ProductType, "categoryId">) => void;
+    onRemoveFromCart: (product: Omit<ProductType, "categoryId">) => void;
     isInCart: boolean;
 }
 

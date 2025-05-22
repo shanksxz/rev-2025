@@ -36,9 +36,9 @@ export default function Page() {
 
 	const router = useRouter();
 	const { productId } = router.query;
-	const [quantity, setQuantity] = useState(1);
-	const [snackbarOpen, setSnackbarOpen] = useState(false);
-	const { addItem, updateQuantity } = useCart();
+	const { addItem, updateQuantity, items } = useCart();
+
+	const currentProduct = items.find((item) => item.product.id === productId);
 
 	const { data: product, isLoading, error } = useQuery({
 		queryKey: ["product", productId],
@@ -47,33 +47,25 @@ export default function Page() {
 
 	const handleAddToCart = () => {
 		if (!product) return;
-
 		addItem({
 			id: crypto.randomUUID(),
-			productId: product.id,
-			quantity: 1
+			product: product,
+			quantity: currentProduct ? currentProduct.quantity + 1 : 1
 		});
-
-		setSnackbarOpen(true);
 	};
 
 	const handleIncreaseQuantity = () => {
-		if (product && quantity < product.stock) {
-			setQuantity(quantity + 1);
-			updateQuantity(productId as string, quantity + 1, product.stock);
+		if (currentProduct && currentProduct.quantity < currentProduct.product.stock) {
+			updateQuantity(productId as string, currentProduct.quantity + 1, currentProduct.product.stock);
 		}
 	};
 
 	const handleDecreaseQuantity = () => {
-		if (quantity > 1 && product) {
-			setQuantity(quantity - 1);
-			updateQuantity(productId as string, quantity - 1, product.stock);
+		if (currentProduct && currentProduct.quantity > 1) {
+			updateQuantity(productId as string, currentProduct.quantity - 1, currentProduct.product.stock);
 		}
 	};
 
-	const handleCloseSnackbar = () => {
-		setSnackbarOpen(false);
-	};
 
 	if (isLoading) {
 		return (
@@ -180,12 +172,12 @@ export default function Page() {
 									<IconButton
 										size="small"
 										onClick={handleDecreaseQuantity}
-										disabled={quantity <= 1}
+										disabled={currentProduct && currentProduct.quantity <= 1}
 									>
 										<Remove fontSize="small" />
 									</IconButton>
 									<TextField
-										value={quantity}
+										value={currentProduct ? currentProduct.quantity : 1}
 										type="number"
 										inputProps={{
 											min: 1,
@@ -197,14 +189,14 @@ export default function Page() {
 										onChange={(e) => {
 											const val = parseInt(e.target.value);
 											if (!isNaN(val) && val >= 1 && val <= product.stock) {
-												setQuantity(val);
+												updateQuantity(productId as string, val, product.stock);
 											}
 										}}
 									/>
 									<IconButton
 										size="small"
 										onClick={handleIncreaseQuantity}
-										disabled={quantity >= product.stock}
+										disabled={currentProduct && currentProduct.quantity >= currentProduct.product.stock}
 									>
 										<Add fontSize="small" />
 									</IconButton>
@@ -234,12 +226,6 @@ export default function Page() {
 				</Grid>
 			</Grid>
 
-			<Snackbar
-				open={snackbarOpen}
-				autoHideDuration={3000}
-				onClose={handleCloseSnackbar}
-				message={`${product.name} added to cart!`}
-			/>
 		</Container>
 	);
 }

@@ -1,16 +1,10 @@
 import { Container, Typography, Box, Paper, Grid, IconButton, Divider } from '@mui/material';
 import { Add, Remove, Delete } from '@mui/icons-material';
 import { useCart, CartItem as CartItemType } from '@/hooks/use-cart';
-import { useQuery } from '@tanstack/react-query';
-import { getProduct } from '@/features/products/api/get-product';
 import AppLayout from '@/components/layout/app-layout';
 
-const CartItem = ({ item, onUpdateQuantity, onRemove }: { item: CartItemType, onUpdateQuantity: (productId: string, quantity: number, stock: number) => void, onRemove: (item: CartItemType) => void }) => {
 
-    const { data: product } = useQuery({
-        queryKey: ['product', item.productId],
-        queryFn: () => getProduct(item.productId),
-    });
+const CartItem = ({ item, onUpdateQuantity, onRemove }: { item: CartItemType, onUpdateQuantity: (productId: string, quantity: number, stock: number) => void, onRemove: (item: CartItemType) => void }) => {
 
     return (
         <Paper
@@ -41,8 +35,8 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }: { item: CartItemType, on
                 }}
             >
                 <img
-                    src={product?.image || '/placeholder.png'}
-                    alt={product?.name || 'Product Image'}
+                    src={item.product.image || '/placeholder.png'}
+                    alt={item.product.name || 'Product Image'}
                     style={{
                         width: '100%',
                         height: '100%',
@@ -52,15 +46,15 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }: { item: CartItemType, on
                 />
             </Box>
             <Box sx={{ flex: 2, minWidth: 120 }}>
-                <Typography variant="h6">{product?.name}</Typography>
+                <Typography variant="h6">{item.product.name}</Typography>
                 <Typography variant="body2" color="text.secondary">
-                    ${product?.price.toFixed(2)} each
+                    ${item.product.price.toFixed(2)} each
                 </Typography>
             </Box>
             <Box sx={{ flex: 1, minWidth: 120, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <IconButton
                     size="small"
-                    onClick={() => onUpdateQuantity(item.productId, Math.max(1, item.quantity - 1), product?.stock || 0)}
+                    onClick={() => onUpdateQuantity(item.product.id, Math.max(1, item.quantity - 1), item.product.stock)}
                     disabled={item.quantity <= 1}
                 >
                     <Remove />
@@ -68,8 +62,8 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }: { item: CartItemType, on
                 <Typography sx={{ mx: 2 }}>{item.quantity}</Typography>
                 <IconButton
                     size="small"
-                    onClick={() => onUpdateQuantity(item.productId, Math.min(product?.stock || 0, item.quantity + 1), product?.stock || 0)}
-                    disabled={item.quantity >= (product?.stock || 0)}
+                    onClick={() => onUpdateQuantity(item.product.id, Math.min(item.product.stock, item.quantity + 1), item.product.stock)}
+                    disabled={item.quantity >= item.product.stock}
                 >
                     <Add />
                 </IconButton>
@@ -77,6 +71,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }: { item: CartItemType, on
             <Box sx={{ flex: 1, minWidth: 120, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <IconButton
                     size="small"
+                    color='error'
                     onClick={() => onRemove(item)}
                 >
                     <Delete />
@@ -87,7 +82,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }: { item: CartItemType, on
 }
 
 export default function CartPage() {
-    const { items, updateQuantity, removeItem } = useCart();
+    const { items, updateQuantity, removeItem, total, subtotal, tax, shipping } = useCart();
 
     if (items.length === 0) {
         return (
@@ -109,7 +104,7 @@ export default function CartPage() {
             <Typography variant="h4" component="h1" gutterBottom>
                 Your Cart
             </Typography>
-            <Grid container spacing={3}>
+            <Grid container spacing={3} sx={{ flexDirection: { xs: 'column-reverse', md: 'row' } }}>
                 <Grid item xs={12} md={8}>
                     {items.map((item) => (
                         <Grid key={item.id} item xs={12}>
@@ -121,7 +116,7 @@ export default function CartPage() {
                         </Grid>
                     ))}
                 </Grid>
-                {/* <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={4}>
                     <Paper sx={{ p: 3, borderRadius: 2, border: '1px solid #e0e0e0', boxShadow: 'none' }}>
                         <Typography variant="h6" gutterBottom>
                             Order Summary
@@ -141,7 +136,7 @@ export default function CartPage() {
                             <Typography variant="h6">${total.toFixed(2)}</Typography>
                         </Box>
                     </Paper>
-                </Grid> */}
+                </Grid>
             </Grid>
         </Container>
     );

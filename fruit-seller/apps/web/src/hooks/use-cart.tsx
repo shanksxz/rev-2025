@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useReducer, useCallback, useEffect } from "react"
+import React, { createContext, useContext, useReducer, useCallback, useEffect, useRef, useState } from "react"
 import { ProductType } from "@repo/database";
 
 export interface Cart {
@@ -11,7 +11,7 @@ export interface Cart {
 export interface CartItem {
   id?: string;
   cartId?: string;
-  productId: string;
+  product: Omit<ProductType, "categoryId">; 
   quantity: number;
 }
 
@@ -22,10 +22,10 @@ interface CartContextType {
   removeItem: (item: CartItem) => void;
   updateQuantity: (productId: string, quantity: number, stock: number) => void;
   clearCart: () => void;
-  // tax: number;
-  // shipping: number;
-  // total: number;
-  // subtotal: number;
+  tax: number;
+  shipping: number;
+  total: number;
+  subtotal: number;
 }
 
 type CartAction =
@@ -33,6 +33,7 @@ type CartAction =
   | { type: 'REMOVE_ITEM'; payload: CartItem }
   | { type: 'UPDATE_QUANTITY'; payload: { productId: string; quantity: number, stock: number } }
   | { type: 'CLEAR_CART' }
+  | { type: "MERGE_CART"; payload: CartItem[] }
   | { type: 'INITIALIZE'; payload: CartItem[] };
 
 // function cartReducer(state: CartItem[], action: CartAction): CartItem[] {
@@ -82,11 +83,11 @@ function cartReducer(state: CartItem[], action: CartAction): CartItem[] {
   let newState: CartItem[] = [];
   switch (action.type) {
     case "ADD_ITEM":
-      const existingItem = state.find((item) => item.productId === action.payload.productId);
+      const existingItem = state.find((item) => item.product.id === action.payload.product.id);
       if (existingItem) {
         newState = state.map((item) =>
-          item.productId === action.payload.productId
-            ? { ...item, quantity: item.quantity + action.payload.quantity }
+          item.product.id === action.payload.product.id
+            ? { ...item, quantity: Math.min(item.quantity + action.payload.quantity, action.payload.product.stock) }
             : item
         );
       } else {
@@ -94,14 +95,17 @@ function cartReducer(state: CartItem[], action: CartAction): CartItem[] {
       }
       break;
     case "REMOVE_ITEM":
-      newState = state.filter((item) => item.productId !== action.payload.productId);
+      newState = state.filter((item) => item.product.id !== action.payload.product.id);
       break;
     case "UPDATE_QUANTITY":
       newState = state.map((item) =>
-        item.productId === action.payload.productId
+        item.product.id === action.payload.productId
           ? { ...item, quantity: Math.min(action.payload.quantity, action.payload.stock) }
           : item
       );
+      break;
+    case "MERGE_CART":
+      newState = [...state, ...action.payload];
       break;
     case "CLEAR_CART":
       newState = [];
@@ -135,10 +139,6 @@ export default function CartContextProvider({ children }: { children: React.Reac
     }
   }, []);
 
-  // const subtotal = state.reduce((total, item) => total + item.quantity, 0);
-  // const tax = subtotal * TAX_RATE;
-  // const total = subtotal + tax + SHIPPING_COST;
-
   const addItem = useCallback((item: CartItem) => {
     dispatch({ type: "ADD_ITEM", payload: item });
   }, []);
@@ -156,6 +156,10 @@ export default function CartContextProvider({ children }: { children: React.Reac
   }, []);
 
   const totalItems = state.reduce((sum, item) => sum + item.quantity, 0);
+  const tax = state.reduce((sum, item) => sum + (item.product.price * TAX_RATE), 0);
+  const shipping = SHIPPING_COST;
+  const total = state.reduce((sum, item) => sum + (item.product.price * item.quantity), 0) + tax + shipping;
+  const subtotal = state.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
 
   return (
     <CartContext.Provider value={{
@@ -165,6 +169,10 @@ export default function CartContextProvider({ children }: { children: React.Reac
       addItem,
       updateQuantity,
       clearCart,
+      tax,
+      shipping,
+      total,
+      subtotal,
     }}>
       {children}
     </CartContext.Provider>

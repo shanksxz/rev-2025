@@ -5,13 +5,11 @@ const protectedRoutes = [
     "/checkout",
     "/orders",
     "/account",
-    "/cart",
     "/wishlist",
 ];
 
 const adminRoutes = [
     "/dashboard",
-    "/admin",
     "/products/manage",
     "/orders/manage",
     "/users/manage",
