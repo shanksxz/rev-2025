@@ -9,6 +9,7 @@ import {
 	Grid,
 	Link,
 	Paper,
+	Snackbar,
 	TextField,
 	Typography,
 } from "@mui/material";
@@ -20,12 +21,20 @@ import React, { useState } from "react";
 export default function Page() {
 	const router = useRouter();
 
+	const [open, setOpen] = useState(false);
+	const [error, setError] = useState("");
+
 	const { mutate: signup, isPending } = useMutation({
 		mutationFn: (values: SignUpSchemaType) => {
 			return api.post("/auth/signup", values);
 		},
 		onSuccess: () => {
 			router.push("/");
+		},
+		onError: (error) => {
+			setOpen(true);
+			// @ts-ignore
+			setError(error.response.data.message);
 		},
 	});
 
@@ -259,6 +268,13 @@ export default function Page() {
 					</Box>
 				</Paper>
 			</Container>
+
+			<Snackbar
+				open={open}
+				autoHideDuration={3000}
+				onClose={() => setOpen(false)}
+				message={error}
+			/>
 		</Box>
 	);
 }

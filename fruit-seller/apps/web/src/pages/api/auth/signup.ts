@@ -1,6 +1,6 @@
 import { encrypt } from "@/auth/session";
 import { signUpSchema } from "@/types";
-import { db, sessions, users } from "@repo/database";
+import { db, eq, sessions, users } from "@repo/database";
 import bcrypt from "bcryptjs";
 import { serialize } from "cookie";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -9,6 +9,15 @@ export const signup = async (req: NextApiRequest, res: NextApiResponse) => {
     try {
         const { email, password, firstName, lastName } =
             signUpSchema.validateSync(req.body);
+
+        const existingUser = await db.query.users.findFirst({
+            where: eq(users.email, email),
+        });
+
+        if (existingUser) {
+            return res.status(400).json({ message: "User already exists" });
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const [user] = await db

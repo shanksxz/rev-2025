@@ -36,49 +36,6 @@ type CartAction =
   | { type: "MERGE_CART"; payload: CartItem[] }
   | { type: 'INITIALIZE'; payload: CartItem[] };
 
-// function cartReducer(state: CartItem[], action: CartAction): CartItem[] {
-//   let newState: CartItem[];
-
-//   switch (action.type) {
-//     case "ADD_ITEM":
-//       const existingItem = state.find((item) => item.product.id === action.payload.product.id);
-//       if (existingItem) {
-//         newState = state.map((item) =>
-//           item.product.id === action.payload.product.id
-//             ? { ...item, quantity: Math.min(item.quantity + 1, item.product.stock) }
-//             : item
-//         );
-//       } else {
-//         newState = [...state, action.payload];
-//       }
-//       break;
-//     case "REMOVE_ITEM":
-//       newState = state.filter((item) => item.product.id !== action.payload.product.id);
-//       break;
-//     case "UPDATE_QUANTITY":
-//       newState = state.map((item) =>
-//         item.product.id === action.payload.item.product.id
-//           ? { ...item, quantity: Math.min(action.payload.quantity, item.product.stock) }
-//           : item
-//       );
-//       break;
-//     case "CLEAR_CART":
-//       newState = [];
-//       break;
-//     case "INITIALIZE":
-//       newState = action.payload;
-//       break;
-//     default:
-//       return state;
-//   }
-
-//   if (typeof window !== 'undefined') {
-//     localStorage.setItem("cart", JSON.stringify(newState));
-//   }
-
-//   return newState;
-// }
-
 function cartReducer(state: CartItem[], action: CartAction): CartItem[] {
   let newState: CartItem[] = [];
   switch (action.type) {

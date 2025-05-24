@@ -37,7 +37,7 @@ const EditProduct: NextPageWithLayout = () => {
 
 EditProduct.getLayout = function getLayout(page: ReactElement) {
     return (
-        <DashboardLayout title="Edit Product">
+        <DashboardLayout>
             {page}
         </DashboardLayout>
     );

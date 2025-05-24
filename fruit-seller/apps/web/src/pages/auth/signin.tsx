@@ -15,10 +15,15 @@ import {
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { useFormik } from "formik";
+import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 export default function Page() {
 	const router = useRouter();
+	const [open, setOpen] = useState(false);
+	const [error, setError] = useState("");
+
 
 	const { mutate: signIn, isPending } = useMutation({
 		mutationFn: async (values: SignInSchemaType) => {
@@ -26,6 +31,12 @@ export default function Page() {
 		},
 		onSuccess: () => {
 			router.push("/");
+		},
+		onError: (error) => {
+			console.log(error);
+			setOpen(true);
+			// @ts-ignore
+			setError(error.response.data.message);
 		},
 	});
 
@@ -204,6 +215,13 @@ export default function Page() {
 					</Box>
 				</Paper>
 			</Container>
+
+			<Snackbar
+				open={open}
+				autoHideDuration={3000}
+				onClose={() => setOpen(false)}
+				message={error}
+			/>
 		</Box>
 	);
 }

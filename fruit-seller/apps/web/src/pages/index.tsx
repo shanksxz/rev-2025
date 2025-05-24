@@ -1,36 +1,18 @@
 import useSession from "@/auth/use-session";
 import { Button, Box, Typography, Container } from "@mui/material";
 import { useRouter } from "next/router";
-
+import { useEffect } from "react";
+import AppLayout from "@/components/layout/app-layout";
 export default function Home() {
-	const { session } = useSession();
 	const router = useRouter();
+	
+	useEffect(() => {
+		router.push('/products');
+	}, [router]);
 
-	return (
-		<Container maxWidth="md">
-			<Box sx={{ my: 4, textAlign: 'center' }}>
-				<Typography variant="h4" component="h1" gutterBottom>
-					Fruit Seller E-commerce
-				</Typography>
-
-				<Box sx={{ mt: 4 }}>
-					<Button
-						variant="contained"
-						color="primary"
-						onClick={() => router.push('/dashboard')}
-						sx={{ mr: 2 }}
-					>
-						Go to Dashboard
-					</Button>
-
-					<Button
-						variant="outlined"
-						onClick={() => router.push('/about')}
-					>
-						About Us
-					</Button>
-				</Box>
-			</Box>
-		</Container>
-	);
+	return null;
 }
+
+Home.getLayout = function getLayout(page: React.ReactElement) {
+	return <AppLayout>{page}</AppLayout>;
+};

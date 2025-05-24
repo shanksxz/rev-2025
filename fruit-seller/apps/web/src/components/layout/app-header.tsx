@@ -1,41 +1,51 @@
-import { AppBar, Toolbar, Typography, Badge, Link, Box } from '@mui/material';
-import { ShoppingCart } from '@mui/icons-material';
+import { AppBar, Toolbar, Typography, Badge, Link, Box, Container } from '@mui/material';
+import { ShoppingCart, Person, Dashboard } from '@mui/icons-material';
 import { useCart } from '@/hooks/use-cart';
+import useSession from '@/auth/use-session';
 
 export default function AppHeader() {
     const { totalItems } = useCart();
+    const { session } = useSession();
     return (
-        <AppBar position="static" sx={{ backgroundColor: "black", boxShadow: "none" }}>
-            <Toolbar sx={{ minHeight: 64, px: { xs: 2, sm: 4 } }}>
-                <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
-                    <Link
-                        href="/"
-                        underline="none"
-                        sx={{
-                            letterSpacing: 1,
-                            fontSize: { xs: "1.1rem", sm: "1.3rem" },
-                            fontWeight: 700,
-                            transition: "opacity 0.2s",
-                            "&:hover": { opacity: 0.7 }
-                        }}
-                    >
-                        Ecomm
-                    </Link>
-                </Typography>
-                <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-                    <Link href="/products" underline="none" color="inherit">
-                        <Typography variant="body1" color="inherit">Explore</Typography>
-                    </Link>
-                    <Link href="/cart" underline="none" color="inherit">
-                        <Badge
-                            badgeContent={totalItems}
-                            color="primary"
+        <AppBar position="static" sx={{ backgroundColor: "transparent", boxShadow: "none" }}>
+            <Container maxWidth="lg">
+                <Toolbar disableGutters sx={{ minHeight: 64, px: 0, mx: 0, display: "flex", justifyContent: "space-between" }}>
+                    <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                        <Link
+                            href="/"
+                            underline="none"
+                            sx={{
+                                letterSpacing: 1,
+                                fontSize: { xs: "1.1rem", sm: "1.3rem" },
+                                fontWeight: 700,
+                                transition: "opacity 0.2s",
+                                "&:hover": { opacity: 0.7 }
+                            }}
                         >
-                            <ShoppingCart sx={{ color: "white", fontSize: 28 }} />
-                        </Badge>
-                    </Link>
-                </Box>
-            </Toolbar>
+                            Fruitopia
+                        </Link>
+                    </Typography>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                        {session?.user.role === "admin" && (
+                            <Link href="/dashboard" underline="none" color="black">
+                                <Dashboard sx={{ color: "black", fontSize: 24 }} />
+                            </Link>
+                        )}
+                        <Link href={session?.user.firstName ? "/profile" : "/auth/signin"} underline="none" color="black">
+                            <Person sx={{ color: "black", fontSize: 24 }} />
+                        </Link>
+
+                        <Link href="/cart" underline="none" color="black">
+                            <Badge
+                                badgeContent={totalItems}
+                                color="primary"
+                            >
+                                <ShoppingCart sx={{ color: "black", fontSize: 24 }} />
+                            </Badge>
+                        </Link>
+                    </Box>
+                </Toolbar>
+            </Container>
         </AppBar>
     );
 }

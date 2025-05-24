@@ -94,7 +94,7 @@ export default function Page() {
 	}
 
 	return (
-		<Container maxWidth="lg" sx={{ py: 6 }}>
+		<Container maxWidth="lg" sx={{ py: 2 }}>
 			<Button
 				startIcon={<ArrowBack />}
 				onClick={() => router.back()}

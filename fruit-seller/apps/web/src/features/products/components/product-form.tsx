@@ -168,7 +168,7 @@ export const ProductForm = ({ initialValues, isEdit = false, productId }: { init
                 helperText={formik.touched.image && formik.errors.image}
                 size="small"
             />
-            <Box display="flex" gap={2} justifyContent="flex-end">
+            <Box display="flex" gap={2} justifyContent="flex-end" flexWrap="wrap">
                 <Button type="submit" fullWidth variant="contained" color="primary" disabled={isPending || isDeleting}>
                     {submitButtonText}
                 </Button>

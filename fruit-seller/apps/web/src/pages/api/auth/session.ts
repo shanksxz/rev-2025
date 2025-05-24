@@ -14,10 +14,11 @@ export async function getSession(req: NextApiRequest, res: NextApiResponse) {
             with: {
                 user: {
                     columns: {
-                        role: true,
                         firstName: true,
                         lastName: true,
                         email: true,
+                        createdAt: true,
+                        role: true,
                     },
                 },
             },

@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import {
     Card,
     CardContent,
@@ -15,18 +15,17 @@ import Link from 'next/link';
 
 interface ProductCardProps {
     product: Omit<ProductType, "categoryId">;
+    updateQuantity: (productId: string, quantity: number, stock: number) => void;
     onAddToCart: (product: Omit<ProductType, "categoryId">) => void;
-    onRemoveFromCart: (product: Omit<ProductType, "categoryId">) => void;
-    isInCart: boolean;
+    quantity: number;
 }
 
 export const ProductCard = memo(function ProductCard({
     product,
     onAddToCart,
-    onRemoveFromCart,
-    isInCart,
+    updateQuantity,
+    quantity,
 }: ProductCardProps) {
-    console.log("rerender product card");
     return (
         <Card
             sx={{
@@ -96,8 +95,49 @@ export const ProductCard = memo(function ProductCard({
                     <Rating value={4.5} precision={0.5} size="small" readOnly />
                 </Box>
             </CardContent>
-            <CardActions sx={{ p: 2, pt: 0 }}>
-                <Button
+            <CardActions sx={{ p: 2, pt: 0, flexDirection: 'column', gap: 1 }}>
+                {quantity === 0 ? (
+                    <Button
+                        variant="contained"
+                        fullWidth
+                        startIcon={<AddShoppingCart />}
+                        color="primary"
+                        onClick={() => onAddToCart(product)}
+                        sx={{
+                            borderRadius: 3,
+                            fontWeight: 600,
+                            textTransform: 'none',
+                            py: 1.1,
+                            fontSize: '1rem',
+                        }}
+                    >
+                        Add to Cart
+                    </Button>
+                ) : (
+                    <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', mb: 1, justifyContent: 'center' }}>
+                        <Button
+                            size="small"
+                            variant="outlined"
+                            sx={{ minWidth: 32, px: 1 }}
+                            onClick={() => updateQuantity(product.id, Math.max(0, quantity - 1), product.stock)}
+                            disabled={quantity <= 0}
+                        >
+                            -
+                        </Button>
+                        <Typography sx={{ mx: 2, minWidth: 24, textAlign: 'center', fontWeight: 600 }}>
+                            {quantity}
+                        </Typography>
+                        <Button
+                            size="small"
+                            variant="outlined"
+                            sx={{ minWidth: 32, px: 1 }}
+                            onClick={() => updateQuantity(product.id, Math.min(product.stock, quantity + 1), product.stock)}
+                        >
+                            +
+                        </Button>
+                    </Box>
+                )}
+                {/* <Button
                     variant="contained"
                     fullWidth
                     startIcon={isInCart ? <RemoveShoppingCart /> : <AddShoppingCart />}
@@ -114,7 +154,7 @@ export const ProductCard = memo(function ProductCard({
                     }}
                 >
                     {isInCart ? 'Remove from Cart' : 'Add to Cart'}
-                </Button>
+                </Button> */}
             </CardActions>
         </Card>
     );

@@ -128,7 +128,7 @@ export default function CartPage() {
                         </Box>
                         <Box display="flex" justifyContent="space-between" mb={2}>
                             <Typography>Shipping</Typography>
-                            <Typography>Free</Typography>
+                            <Typography>{shipping}</Typography>
                         </Box>
                         <Divider sx={{ my: 2 }} />
                         <Box display="flex" justifyContent="space-between" mb={2}>

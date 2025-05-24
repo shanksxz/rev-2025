@@ -4,15 +4,13 @@ const protectedRoutes = [
     "/dashboard",
     "/checkout",
     "/orders",
-    "/account",
-    "/wishlist",
+    "/profile",
 ];
 
 const adminRoutes = [
     "/dashboard",
-    "/products/manage",
-    "/orders/manage",
-    "/users/manage",
+    "/products/",
+    "/orders/",
 ];
 
 type Session = {

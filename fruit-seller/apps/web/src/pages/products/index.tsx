@@ -10,22 +10,24 @@ import { Search as SearchIcon } from "@mui/icons-material";
 import useDebounce from "@/hooks/use-debounce";
 import { useQueryState } from 'nuqs'
 
+interface ProductFiltersProps {
+    query: string;
+    setQuery: (value: string) => void;
+    sortBy: string;
+    setSortBy: (value: string) => void;
+}
 export function ProductPage() {
-
     const [query, setQuery] = useQueryState("query", { defaultValue: "" });
     const [sortBy, setSortBy] = useQueryState("sortBy", { defaultValue: "name-asc" });
-    const debouncedQuery = useDebounce(query, 500);
 
-    const { addItem, removeItem, items } = useCart();
+    const debouncedQuery = useDebounce(query, 1000);
+
+    const { addItem, items, updateQuantity } = useCart();
 
     const { data: products, isPending } = useQuery({
         queryKey: ["products", debouncedQuery, sortBy],
         queryFn: () => getProducts(debouncedQuery, sortBy),
     });
-
-    const handleSortChange = useCallback((event: SelectChangeEvent<string>) => {
-        setSortBy(event.target.value);
-    }, [setSortBy]);
 
     const handleAddToCart = useCallback((product: Omit<ProductType, "categoryId">) => {
         addItem({
@@ -35,38 +37,24 @@ export function ProductPage() {
         });
     }, [addItem]);
 
-    const handleRemoveFromCart = useCallback((product: Omit<ProductType, "categoryId">) => {
-        removeItem({
-            id: product.id,
-            product: product,
-            quantity: 1,
-        });
-    }, [removeItem]);
-
-    if (isPending) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <CircularProgress />
-            </Box>
-        );
-    }
-
-    if (!products || products.length === 0) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Typography variant="h4" component="h1">
-                    No products found
-                </Typography>
-            </Box>
-        );
-    }
+    const handleUpdateQuantity = useCallback((productId: string, quantity: number, stock: number) => {
+        updateQuantity(productId, quantity, stock);
+    }, [updateQuantity]);
 
     return (
-        <Container maxWidth="lg" sx={{ py: 4 }}>
-            <Typography variant="h4" component="h1">
+        <Container maxWidth="lg" sx={{ py: 2 }}>
+            <Typography
+                variant="h4"
+                component="h1"
+                sx={{
+                    mb: 3,
+                    fontSize: { xs: "1.2rem", sm: "1.5rem" },
+                    fontWeight: 700,
+                }}
+            >
                 Explore our products
             </Typography>
-            <Box display="flex" gap={2} my={2}>
+            <Box display="flex" gap={2} mb={3}>
                 <TextField
                     placeholder="Search products..."
                     variant="outlined"
@@ -84,7 +72,7 @@ export function ProductPage() {
                 />
                 <FormControl sx={{ flex: 1 }} size="small">
                     <InputLabel id="sort-label">Sort By</InputLabel>
-                    <Select labelId="sort-label" value={sortBy} onChange={handleSortChange} label="Sort By">
+                    <Select labelId="sort-label" value={sortBy} onChange={(e) => setSortBy(e.target.value)} label="Sort By">
                         <MenuItem value="price-low">Price: Low to High</MenuItem>
                         <MenuItem value="price-high">Price: High to Low</MenuItem>
                         <MenuItem value="name-asc">Name: A to Z</MenuItem>
@@ -93,18 +81,31 @@ export function ProductPage() {
                 </FormControl>
             </Box>
             <Box sx={{ flexGrow: 1 }}>
-                <Grid container spacing={3} >
-                    {products.map((product) => (
-                        <Grid key={product.id} item xs={12} sm={6} md={4} lg={3}>
-                            <ProductCard
-                                product={product}
-                                onAddToCart={handleAddToCart}
-                                onRemoveFromCart={handleRemoveFromCart}
-                                isInCart={items.some((item) => item.id === product.id)}
-                            />
-                        </Grid>
-                    ))}
-                </Grid>
+                {isPending ? (
+                    <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+                        <CircularProgress />
+                    </Box>
+                ) : (
+                    <Grid container spacing={3}>
+                        {products && products.map((product) => (
+                            <Grid key={product.id} item xs={12} sm={6} md={4} lg={3}>
+                                <ProductCard
+                                    quantity={items.find((item) => item.id === product.id)?.quantity || 0}
+                                    product={product}
+                                    updateQuantity={handleUpdateQuantity}
+                                    onAddToCart={handleAddToCart}
+                                />
+                            </Grid>
+                        ))}
+                        {products && products.length === 0 && (
+                            <Grid item xs={12}>
+                                <Typography variant="h6" component="h2" sx={{ textAlign: "center" }}>
+                                    No products found
+                                </Typography>
+                            </Grid>
+                        )}
+                    </Grid>
+                )}
             </Box>
         </Container>
     );
