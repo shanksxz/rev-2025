@@ -1,4 +1,5 @@
 import { db, products, and, ilike, desc, asc } from "@repo/database";
+import { getSession } from "@/auth/session";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 enum SortBy {
@@ -20,7 +21,6 @@ export const getProducts = async (
 
         let orderBy;
         const sortValue = Array.isArray(sortBy) ? sortBy[0] : sortBy;
-        console.log("sortValue", sortValue);
         if (sortValue && typeof sortValue === "string") {
             switch (sortValue) {
                 case SortBy.PRICE_ASC:
@@ -55,6 +55,10 @@ export const createProduct = async (
     res: NextApiResponse
 ) => {
     try {
+        const session = await getSession(req, res);
+        if (!session || session.user.role !== "admin") {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
         const newProduct = await db.insert(products).values(req.body);
         res.status(201).json(newProduct);
     } catch (error) {

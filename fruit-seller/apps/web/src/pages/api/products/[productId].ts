@@ -1,39 +1,7 @@
-import { db, eq, products, sessions } from "@repo/database";
+import { getSession } from "@/auth/session";
+import { db, eq, products } from "@repo/database";
 import type { NextApiResponse } from "next";
 import type { NextApiRequest } from "next";
-
-export const getSession = async (req: NextApiRequest, res: NextApiResponse) => {
-    try {
-        const sessionToken = req.cookies.session;
-
-        if (!sessionToken) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
-
-        const session = await db.query.sessions.findFirst({
-            where: eq(sessions.token, sessionToken),
-            with: {
-                user: {
-                    columns: {
-                        role: true,
-                        firstName: true,
-                        lastName: true,
-                        email: true,
-                    },
-                },
-            },
-        });
-
-        if (!session?.user) {
-            return null;
-        }
-
-        return session;
-    } catch (error) {
-        console.error("Session error:", error);
-        return null;
-    }
-};
 
 export const getProduct = async (req: NextApiRequest, res: NextApiResponse) => {
     try {

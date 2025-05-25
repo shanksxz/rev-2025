@@ -19,5 +19,19 @@ export const signUpSchema = yup.object().shape({
 	confirmPassword: yup.string().required("Confirm password is required"),
 });
 
+export type Session = {
+    id: string;
+    userId: string;
+    token: string;
+    expiresAt: Date;
+    user: {
+        firstName: string;
+        lastName: string;
+        email: string;
+        createdAt: Date;
+        role: "admin" | "user";
+    };
+};
+
 export type SignInSchemaType = yup.InferType<typeof signInSchema>;
 export type SignUpSchemaType = yup.InferType<typeof signUpSchema>;

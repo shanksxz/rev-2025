@@ -10,12 +10,6 @@ import { Search as SearchIcon } from "@mui/icons-material";
 import useDebounce from "@/hooks/use-debounce";
 import { useQueryState } from 'nuqs'
 
-interface ProductFiltersProps {
-    query: string;
-    setQuery: (value: string) => void;
-    sortBy: string;
-    setSortBy: (value: string) => void;
-}
 export function ProductPage() {
     const [query, setQuery] = useQueryState("query", { defaultValue: "" });
     const [sortBy, setSortBy] = useQueryState("sortBy", { defaultValue: "name-asc" });

@@ -1,23 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { Session } from "@/types";
 
-const protectedRoutes = [
-    "/dashboard",
-    "/checkout",
-    "/orders",
-    "/profile",
-];
-
-const adminRoutes = [
-    "/dashboard",
-    "/products/",
-    "/orders/",
-];
-
-type Session = {
-    user: {
-        role: string;
-    };
-};
+const protectedRoutes = ["/dashboard", "/checkout", "/orders", "/profile"];
+const adminRoutes = ["/dashboard", "/products/", "/orders/"];
 
 export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
@@ -31,7 +16,7 @@ export async function middleware(request: NextRequest) {
     );
 
     const sessionResponse = await fetch(
-        "http://localhost:3000/api/auth/session",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/session`,
         {
             headers: {
                 Cookie: request.headers.get("cookie") || "",

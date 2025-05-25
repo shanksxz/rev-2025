@@ -1,19 +1,6 @@
 import api from "@/lib/api-client";
 import { useQuery } from "@tanstack/react-query";
-
-export type Session = {
-    id: string;
-    userId: string;
-    token: string;
-    expiresAt: Date;
-    user: {
-        firstName: string;
-        lastName: string;
-        email: string;
-        createdAt: Date;
-        role: "admin" | "user";
-    };
-};
+import { Session } from "@/types";
 
 export async function getSession(): Promise<Session> {
     return api.get("/auth/session");

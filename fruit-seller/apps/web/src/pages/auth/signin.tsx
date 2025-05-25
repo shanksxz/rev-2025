@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { useFormik } from "formik";
-import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
+import Snackbar from '@mui/material/Snackbar';
 import { useRouter } from "next/router";
 import { useState } from "react";
 
